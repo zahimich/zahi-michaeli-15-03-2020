@@ -50,5 +50,5 @@ footer p {
 }
 
 h1 {
-    color: red;
+    color: red !important;
 }
