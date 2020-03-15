@@ -55,7 +55,7 @@ function showLocation(position) {
 function getWeatherValues(locationName, locationKey) {
     //debugger;
 
-    var url = "http://dataservice.accuweather.com/currentconditions/v1/"+locationKey+"?apikey="+APIKEY+"&language=en-us&details=true";
+    var url = "https://dataservice.accuweather.com/currentconditions/v1/"+locationKey+"?apikey="+APIKEY+"&language=en-us&details=true";
 
     $("."+locationKey).append("<hr><small><p><code><small>"
     + url
@@ -94,7 +94,7 @@ function getAutoCompleteValues(val) {
         showAutoCompleteValues(savedResults);
     }
     else {
-        var url = "http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey="+APIKEY+"&q=" + val;
+        var url = "https://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey="+APIKEY+"&q=" + val;
         $("#location-query").html("<p><code><small>" + url + "</small></code></p>");
         useXHR(url, callbackAutoCompleteValues, "");
     }
