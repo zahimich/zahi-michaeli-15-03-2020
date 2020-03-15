@@ -136,7 +136,7 @@ function useXHR(url, callback, callbackValue) {
         xhr = new XDomainRequest();
         xhr.open('GET', url);
     }
-    xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+    //xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
     xhr.send();
 }
 
