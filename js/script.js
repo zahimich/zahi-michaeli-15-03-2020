@@ -11,17 +11,8 @@ function readFromLS(key) {
 document.addEventListener("DOMContentLoaded", function() {
     //localStorage.clear();
     getLocation();
+    loadFavorites();
 });
-
-document.addEventListener('click', function (event) {
-    //debugger;
-	if (!event.target.classList.contains('navbar-toggler') && !event.target.classList.contains('navbar-toggler-icon')) return;
-	event.preventDefault();
-	//var content = document.querySelector(event.target.hash);
-	//if (!content) return;
-	toggleMenu();
-}, false);
-
 
 function getLocation() {
     if (navigator.geolocation) {
@@ -59,14 +50,14 @@ function setDefaultLocation(position) {
 function showDefaultLocation(data) {
     var city = data.EnglishName;
     document.getElementById("searchtext").value = city;
-    getAutoCompleteValues(city);
+    getAutoCompleteResults();
 }
 
-function getWeatherValues(locationName, locationKey) {
+function getWeatherValues(locationName, locationKey, isFavorites) {
     var savedResult = readFromLS("locationData" + locationKey);
-    document.getElementsByClassName(locationKey)[0].innerHTML += "<h3>" + locationName + "</h3>";
+    document.getElementsByClassName(isFavorites ? "fav" + locationKey : locationKey)[0].innerHTML += "<h3>" + locationName + "</h3>";
     if (savedResult != null) {
-        showWeatherValues(savedResult, locationKey);
+        showWeatherValues(savedResult, locationKey, isFavorites);
     }
     else {
         var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/currentconditions/v1/"+locationKey+"?apikey="+APIKEY+"&details=true";
@@ -76,24 +67,24 @@ function getWeatherValues(locationName, locationKey) {
                 return;
             }
             saveToLS("locationData" + locationKey, data);
-            showWeatherValues(data, locationKey);
+            showWeatherValues(data, locationKey, isFavorites);
         });
     }
 }
-function showWeatherValues(data, locationKey) {
+function showWeatherValues(data, locationKey, isFavorites) {
     //debugger;
     data.forEach(function (item, i) {
         var str = "Weather: " + item.WeatherText + "<br />";
         str +=  "Temperature: " + item.Temperature.Metric.Value + " C<br />";
 
-        document.getElementsByClassName(locationKey)[0].innerHTML += str;
+        document.getElementsByClassName(isFavorites ? "fav" + locationKey : locationKey)[0].innerHTML += str;
     });
 }
 
-function getForecast(locationName, locationKey) {
+function getForecast(locationName, locationKey, isFavorites) {
     var savedForecast = readFromLS("forecastData" + locationKey);
     if (savedForecast != null) {
-        showForecast(savedForecast, locationKey);
+        showForecast(savedForecast, locationKey, isFavorites);
     }
     else {
         var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/forecasts/v1/daily/5day/"+locationKey+"?apikey="+APIKEY+"&details=true&metric=true";
@@ -103,22 +94,23 @@ function getForecast(locationName, locationKey) {
                 return;
             }
             saveToLS("forecastData" + locationKey, data);
-            showForecast(data, locationKey);
+            showForecast(data, locationKey, isFavorites);
         });
     }
 }
-function showForecast(data, locationKey) {
+function showForecast(data, locationKey, isFavorites) {
     //debugger;
     data.DailyForecasts.forEach(function (item, i) {
         var dateObj = new Date(item.Date);
         var dateStr = dateObj.getDate() + "." + (dateObj.getMonth() == 12 ? 1 : dateObj.getMonth() + 1);
         var str = dateStr + ": " + item.Temperature.Minimum.Value + "-" + item.Temperature.Maximum.Value + " C<br />";
         
-        document.getElementsByClassName(locationKey)[0].innerHTML += str;
+        document.getElementsByClassName(isFavorites ? "fav" + locationKey : locationKey)[0].innerHTML += str;
     });
 }
 
-function getAutoCompleteValues(val) {
+function getAutoCompleteResults() {
+    var val = document.getElementById("searchtext").value;
     if (val.length < 3) return false;
 
     //localStorage.removeItem("searchResData");
@@ -144,9 +136,9 @@ function showAutoCompleteValues(data) {
     var results = document.getElementById("results-weather");
     results.innerHTML = "";
     data.forEach(function (item, i) {
-        results.innerHTML += getItemHtml(item);
-        getWeatherValues(item.LocalizedName, item.Key);
-        getForecast(item.LocalizedName, item.Key);
+        results.innerHTML += getItemHtml(item.LocalizedName, item.Country.LocalizedName, item.Key, false);
+        getWeatherValues(item.LocalizedName, item.Key, false);
+        getForecast(item.LocalizedName, item.Key, false);
     });
 }
 
@@ -162,20 +154,26 @@ function useXHR(url, callback) {
     xhr.send();
 }
 
-function getItemHtml(item) {
+function getItemHtml(localizedName, countryLocalizedName, key, isFavorites) {
     //debugger;
+    
     var str = '<div class="col-md-4">';
     str += '<div class="card mb-4 box-shadow">';
-    str += '<!--img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap"-->';
     str += '<div class="card-body">';
-    str += '<p class="card-text">' + item.LocalizedName + '/' + item.Country.ID + ' (' + item.Key + ')</p>';
-    str += '<p class="card-text ' + item.Key + '"></p>';
+    str += '<p class="card-text">' + localizedName + ', ' + countryLocalizedName + '</p>';
+    str += '<p class="card-text ' + (isFavorites ? "fav" + key : key) + '"></p>';
     str += '<div class="d-flex justify-content-between align-items-center">';
     str += '<div class="btn-group">';
-    str += '<button type="button" class="btn btn-sm btn-outline-secondary">View</button>';
-    str += '<button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>';
+
+    var existInFavs = existInFavorites(key);
+    
+    if (!isFavorites && !existInFavs)
+        str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + key + '" data-name="' + localizedName + '" data-country="' + countryLocalizedName + '" onclick="addToFav()">Add To Favorites</button>';
+
+    if (isFavorites || existInFavs)
+        str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + key + '" onclick="removeFromFav()">Remove From Favorites</button>';
+
     str += '</div>';
-    str += '<small class="text-muted">9 mins</small>';
     str += '</div>';
     str += '</div>';
     str += '</div>';
@@ -183,38 +181,108 @@ function getItemHtml(item) {
     return str;
 }
 
-function toggleMenu() {
-	if (document.getElementById("navbarHeader").classList.contains('shown')) {
-		hideElement(document.getElementById("navbarHeader"));
-		return;
-	}
-    showElement(document.getElementById("navbarHeader"));
+function existInFavorites(key) {
+    //debugger;
+    var exist = false;
+    var favorites = readFromLS("favorites");
+    if (favorites != null) {
+        favorites.forEach(function (item, i) {
+            if (key == item.key)
+                exist=true;
+        });
+    }
+    return exist;
 }
 
-function showElement(elem) {
+function toggleMenu() {
     //debugger;
-	var getHeight = function () {
-		elem.style.display = 'block'; // Make it visible
-		var height = elem.scrollHeight + 'px'; // Get it's height
-		elem.style.display = ''; //  Hide it again
-		return height;
-	};
-	var height = getHeight(); // Get the natural height
-	elem.classList.add('shown'); // Make the element visible
-	elem.style.height = height; // Update the max-height
-	// Once the transition is complete, remove the inline max-height so the content can scale responsively
-	window.setTimeout(function () {
-		elem.style.height = '';
-	}, 350);
-};
+    var elem = document.getElementById("navbarHeader");
+	if (elem.classList.contains('show')) {
+        elem.classList.add('fadeOutUp');
+        setTimeout(function() {
+            elem.setAttribute('hidden', 'true');
+            elem.classList.remove('fadeOutUp');
+            elem.classList.remove('show');
+        }, 1000);
+		return;
+	}
+	elem.classList.add('show');
+    elem.removeAttribute('hidden');
+    elem.classList.add('fadeInDown');
+    setTimeout(function() {
+        elem.classList.remove('fadeInDown');
+    }, 1000);
+}
 
-// Hide an element
-function hideElement(elem) {
-	elem.style.height = elem.scrollHeight + 'px';
-	window.setTimeout(function () {
-		elem.style.height = '0';
-	}, 1);
-	window.setTimeout(function () {
-		elem.classList.remove('shown');
-	}, 350);
-};
+function showPage(name, closeMenu) {
+    document.getElementsByClassName("favorites")[0].setAttribute('style', 'display:none;');
+    document.getElementsByClassName("results")[0].setAttribute('style', 'display:none;');
+
+    document.getElementsByClassName(name)[0].setAttribute('style', 'display:block;');
+
+    if (closeMenu)
+        toggleMenu();
+}
+
+function addToFav() {
+    //debugger;
+    var sender = event.target;
+    var favorite = {};
+    favorite.key = sender.attributes["data-key"].value;
+    favorite.localizedName = sender.attributes["data-name"].value;
+    favorite.countryLocalizedName = sender.attributes["data-country"].value;
+
+    var favorites = readFromLS("favorites");
+    if (favorites != null) {
+        favorites.push(favorite);
+
+        saveToLS("favorites", favorites);
+    }
+    else {
+        var favoritesArray = [];
+        favoritesArray.push(favorite);
+
+        saveToLS("favorites", favoritesArray);
+    }
+    loadFavorites();
+    getAutoCompleteResults();
+}
+
+function removeFromFav() {
+    //debugger;
+    var favorites = readFromLS("favorites");
+    if (favorites != null) {
+        var newFavorites = [];
+        favorites.forEach(function (item, i) {
+            if (item.key != event.target.attributes["data-key"].value)
+                newFavorites.push(item);
+        });
+        favorites = newFavorites;
+    }
+    else {
+        favorites = [];
+    }
+    saveToLS("favorites", favorites);
+    loadFavorites();
+    getAutoCompleteResults();
+}
+
+function loadFavorites() {
+    //localStorage.removeItem("favorites");
+
+    //debugger;
+    var results = document.getElementById("results-favorites");
+    results.innerHTML = "";
+    
+    var favorites = readFromLS("favorites");
+    if (favorites == null) {
+        favorites = [];
+        saveToLS("favorites", favorites);
+    }
+
+    favorites.forEach(function (item, i) {
+        results.innerHTML += getItemHtml(item.localizedName, item.countryLocalizedName, item.key, true);
+        getWeatherValues(item.localizedName, item.key, true);
+        getForecast(item.localizedName, item.key, true);
+    });
+}
