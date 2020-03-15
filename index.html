@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <title>accuweather testi</title>
+    <style>
+    h3 {  font-size: 110%; }
+    </style>
+</head>
+
+<body >
+  <script type="text/javascript">
+
+  var APIKEY = "HZXk2uT1NjGHVJ3WQPqjspGMIESFr4dx";
+
+  jQuery(document).ready(function ($) {
+    $("#searchtext").keyup(function () {
+      console.log($("#searchtext").val());
+      getAutoCompleteValues($("#searchtext").val());
+    });
+  });
+
+
+  function getWeatherValues(locationName, locationKey) {
+
+    $("."+locationKey).append("<hr><small><p><code><small>"
+    + "http://dataservice.accuweather.com/currentconditions/v1/"+locationKey+"?apikey="+APIKEY+"&details=true&language=fi"
+    + "</small></code></p></small>");
+    $("."+locationKey).append("<h3>" + locationName + "</h3>");
+
+    $.ajax({
+      type: "GET",
+      dataType: "jsonp",
+      jsonp: "callback",
+      url: "http://dataservice.accuweather.com/currentconditions/v1/"+locationKey+"?apikey="+APIKEY+"&details=true&language=fi",
+      cache: false,
+      success: function (data) {
+        $("#results-weather-json").append(JSON.stringify(data, null, 2));
+        //     alert(data);
+
+        $.each(data, function (i, item) {
+          var str = "Kuvaus: " + item.WeatherText + "</br>";
+          str +=  "Lämpötila: " + item.Temperature.Metric.Value + " C</br>";
+          str +=  "Tuntuu kuin: " + item.RealFeelTemperature.Metric.Value + " C</code></br>";
+          str +=  "Tuuli: " + item.Wind.Speed.Metric.Value;
+          str +=  " " + item.Wind.Speed.Metric.Unit;
+          str +=  " " + item.Wind.Direction.Localized + "</br>";
+
+          $("."+locationKey).append(str);
+        });
+      }
+    });
+  }
+
+
+  function getAutoCompleteValues(val) {
+
+    if (val.length < 3) return false;
+    $("#location-query").html("<p><code><small>"
+      +"http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey="+APIKEY+"&q=" + val
+      + "</small></code></p>");
+
+    $.ajax({
+      type: "GET",
+      dataType: "jsonp",
+      jsonp: "callback",
+      url: "http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey="+APIKEY+"&q=" + val,
+      cache: false,
+      success: function (data) {
+        //     alert(data);
+        $("#results").html('');
+        $("#results-weather").html('');
+        $("#results-json").html('');
+        $("#results-weather-json").html('');
+        $("#results-json").html(JSON.stringify(data, null, 2));
+        $.each(data, function (i, item) {
+          $("#results").append(i+":" +item.LocalizedName + ", " + item.Key + ", " + item.Country.ID + "<br/>");
+          $("#results-weather").append("<div class="+item.Key+"></div>");
+          getWeatherValues(item.LocalizedName, item.Key);
+        });
+      }
+
+    });
+  }
+
+
+  </script>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xs-12 col-md-6">
+        <h3>Säätiedon mittauspaikkojen etsintä</h3>
+        <p><small>Teen hakuja heti, kun kirjoitat tähän kenttään</small></p>
+        <input id="searchtext" type="text" />
+        <hr>
+
+        <h3>Paikkakysely</h3>
+        <small id="location-query"></small>
+        <div id="results" style="text-wrap:preformatted;">
+        </div>
+
+        <hr>
+        <h3>Säätietokyselyt</h3>
+        <div id="results-weather">
+        </div>
+      </div>
+
+
+      <div class="col-xs-12 col-md-6">
+        <hr>
+        <h3>JSON-vastaus paikkatietoihin</h3>
+        <pre><code><div id="results-json"></div></code></pre>
+
+        <hr>
+        <h3>JSON-vastaus säätietoihin</h3>
+        <pre><code><div id="results-weather-json"></div></code></pre>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>
