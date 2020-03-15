@@ -49,6 +49,6 @@ footer p {
     height: auto !important;
 }
 
-h3 {
-    font-size: 16px;
+h1 {
+    color: red;
 }
