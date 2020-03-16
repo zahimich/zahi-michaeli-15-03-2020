@@ -75,3 +75,7 @@ footer p {
     z-index: 20;
     background: #fff;
 }
+
+#err {
+    float: right;
+}
