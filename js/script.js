@@ -277,12 +277,12 @@ function getCurrentWeatherForItem(city) {
 }
 function showCurrentWeatherForItem(data, city) {
     var units = getCurrentUnits();
-    debugger;
-    data.forEach(function (item, i) {
+    if (data.length > 0) {
+        var item = data[0];
         var str = "Current Weather Conditions:<h4>" + (units == "C" ? item.Temperature.Metric.Value : item.Temperature.Imperial.Value) + " " + units + " " + item.WeatherText + "</h4><br />";
         document.getElementsByClassName(city.Key)[0].innerHTML = str;
-    });
-    getForecastForItem(city);
+        getForecastForItem(city);
+    }
 }
 
 function getForecastForItem(city) {
