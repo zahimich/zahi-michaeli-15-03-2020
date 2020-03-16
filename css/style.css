@@ -79,3 +79,7 @@ footer p {
 #err {
     float: right;
 }
+
+.col {
+    margin-bottom: 20px;
+}
