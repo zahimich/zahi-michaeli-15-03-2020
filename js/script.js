@@ -45,6 +45,12 @@ function getDayOfWeek(date) {
             break;
     }
 }
+function checkApi(data) {
+    if (data == undefined) {
+        apiLimitReached = true;
+        document.getElementById("err").innerHTML = "API Limit Reached!";
+    }
+}
 //#endregion infrastructure
 
 //#region onload
@@ -112,12 +118,10 @@ function getCityByLocation(position) {
 
     var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey="+APIKEY+"&q=" + position.latitude + "," + position.longitude;
     useXHR(url, function(data) {
-        if (data == undefined) {
-            apiLimitReached = true;
-            document.getElementById("err").innerHTML = "API Limit Reached!";
-            return;
+        checkApi(data);
+        if (data != undefined) {
+            loadResultsByCity(data.EnglishName);
         }
-        loadResultsByCity(data.EnglishName);
     });
 }
 function loadResultsByCity(city) {
@@ -141,12 +145,10 @@ function loadAutoCompleteResults(loadFirstResult) {
 
     var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey="+APIKEY+"&q=" + val;
     useXHR(url, function(data) {
-        if (data == undefined) {
-            apiLimitReached = true;
-            document.getElementById("err").innerHTML = "API Limit Reached!";
-            return;
+        checkApi(data);
+        if (data != undefined) {
+            showAutoCompleteResults(data, loadFirstResult);
         }
-        showAutoCompleteResults(data, loadFirstResult);
     });
 }
 function showAutoCompleteResults(data, loadFirstResult) {
@@ -280,12 +282,10 @@ function getCurrentWeatherForItem(city) {
     }
     var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/currentconditions/v1/"+city.Key+"?apikey="+APIKEY+"&details=true";
         useXHR(url, function(data) {
-            if (data == undefined) {
-                apiLimitReached = true;
-                document.getElementById("err").innerHTML = "API Limit Reached!";
-                return;
+            checkApi(data);
+            if (data != undefined) {
+                showCurrentWeatherForItem(data, city);
             }
-            showCurrentWeatherForItem(data, city);
         });
 }
 function showCurrentWeatherForItem(data, city) {
@@ -315,12 +315,10 @@ function getForecastForItem(city) {
     var units = getCurrentUnits();
     var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/forecasts/v1/daily/5day/"+city.Key+"?apikey="+APIKEY+"&details=true&metric=" + (units == "C");
         useXHR(url, function(data) {
-            if (data == undefined) {
-                apiLimitReached = true;
-                document.getElementById("err").innerHTML = "API Limit Reached!";
-                return;
+            checkApi(data);
+            if (data != undefined) {
+                showForecastForItem(data, city);
             }
-            showForecastForItem(data, city);
         });
 }
 function showForecastForItem(data, city) {
