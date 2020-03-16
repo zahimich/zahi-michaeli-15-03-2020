@@ -29,6 +29,10 @@
     margin-top: 56px;
 }
 
+.favorites {
+    display: none;
+}
+
 header {
     position: fixed;
     width: 100%;

@@ -43,8 +43,8 @@
 
     <div class="results py-5 bg-light">
       <div class="jumbotron text-center">
-        <h1 class="jumbotron-heading">Search City (default location entered):</h1>
-        <input id="searchtext" type="text" onkeyup="getAutoCompleteValues(this.value)" />
+        <h1 class="jumbotron-heading">Search City:</h1>
+        <input id="searchtext" type="text" onkeyup="loadAutoCompleteResults()" />
       </div>
       <div class="container">
         <div class="row" id="results-weather">
@@ -52,7 +52,7 @@
       </div>
     </div>
 
-    <div class="favorites py-5 bg-light" style="display: none;">
+    <div class="favorites py-5 bg-light">
       <div class="jumbotron">
         <h1 class="jumbotron-heading text-center">Favorites:</h1>
       </div>
