@@ -19,32 +19,6 @@ function useXHR(url, callback) {
     xhr.open('GET', url);
     xhr.send();
 }
-function getDayOfWeek(date) {
-    switch (date.getDay())
-    {
-        case 0:
-            return "Sun";
-            break;
-        case 1:
-            return "Mon";
-            break;
-        case 2:
-            return "Tue";
-            break;
-        case 3:
-            return "Wed";
-            break;
-        case 4:
-            return "Thu";
-            break;
-        case 5:
-            return "Fri";
-            break;
-        case 6:
-            return "Sat";
-            break;
-    }
-}
 function checkApi(data) {
     if (data == undefined) {
         apiLimitReached = true;
@@ -338,7 +312,7 @@ function showForecastForItem(data, city) {
     str += '<div class="row">';
     data.DailyForecasts.forEach(function (item, i) {
         var dateObj = new Date(item.Date);
-        var dateStr = getDayOfWeek(dateObj) + " " + dateObj.getDate() + "." + (dateObj.getMonth() == 12 ? 1 : dateObj.getMonth() + 1);
+        var dateStr = dateObj.toString().substring(0,3) + " " + dateObj.getDate() + "." + (dateObj.getMonth() == 12 ? 1 : dateObj.getMonth() + 1);
         
         str += '<div class="col">';
         str += '<div class="card box-shadow">';
