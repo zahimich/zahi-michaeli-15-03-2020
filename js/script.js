@@ -98,6 +98,10 @@ function getCityByLocation(position) {
 function loadResultsByCity(city) {
     document.getElementById("searchtext").value = city;
     loadAutoCompleteResults();
+    setTimeout(function() {
+        if (document.getElementsByClassName("resultItem") != undefined)
+            document.getElementsByClassName("resultItem")[0].click();
+    }, 500);
 }
 //#endregion geolocation
 
@@ -128,7 +132,6 @@ function showAutoCompleteResults(data) {
     data.forEach(function (item, i) {
         setResultItemHtml(results, item);
     });
-    document.getElementsByClassName("resultItem")[0].click();
 }
 function showAutoCompleteDiv() {
     document.getElementById("results-weather").setAttribute("style", "display: block;");
