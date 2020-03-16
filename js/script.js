@@ -119,16 +119,15 @@ function getCityByLocation(position) {
 }
 function loadResultsByCity(city) {
     document.getElementById("searchtext").value = city;
-    loadAutoCompleteResults();
-    setTimeout(function() {
-        if (document.getElementsByClassName("resultItem")[0] != undefined)
-            document.getElementsByClassName("resultItem")[0].click();
-    }, 500);
+    loadAutoCompleteResults(true);
 }
 //#endregion geolocation
 
 //#region autocomplete
-function loadAutoCompleteResults() {
+function loadAutoCompleteResults(loadFirstResult) {
+    if (loadFirstResult == undefined)
+        loadFirstResult = false;
+
     var val = document.getElementById("searchtext").value;
     if (val.length < 3) return false;
 
@@ -144,15 +143,17 @@ function loadAutoCompleteResults() {
             document.getElementById("err").innerHTML = "API Limit Reached!";
             return;
         }
-        showAutoCompleteResults(data);
+        showAutoCompleteResults(data, loadFirstResult);
     });
 }
-function showAutoCompleteResults(data) {
+function showAutoCompleteResults(data, loadFirstResult) {
     var results = document.getElementById("results-weather");
     results.innerHTML = "";
     data.forEach(function (item, i) {
         setResultItemHtml(results, item);
     });
+    if (loadFirstResult)
+        document.getElementsByClassName("resultItem")[0].click();
 }
 function showAutoCompleteDiv() {
     document.getElementById("results-weather").setAttribute("style", "display: block;");
@@ -362,10 +363,6 @@ function toggleUnits() {
     else
         units = "C";
     saveToLS("units", units);
-    loadAutoCompleteResults();
-    setTimeout(function() {
-        if (document.getElementsByClassName("resultItem")[0] != undefined)
-            document.getElementsByClassName("resultItem")[0].click();
-    }, 500);
+    loadAutoCompleteResults(true);
 }
 //#endregion units
