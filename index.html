@@ -44,12 +44,12 @@
   <main role="main">
 
     <div class="results py-5 bg-light">
-      <div class="jumbotron text-center">
+      <div class="jumbotron">
         <div>
           <div class="container">
-            <span class="jumbotron-heading">Search City:</span>
-            <input id="searchtext" type="text" onkeyup="loadAutoCompleteResults()" />
-            <div id="results-weather">
+            <div class="jumbotron-heading">Search City:</div>
+            <input id="searchtext" type="text" onkeyup="loadAutoCompleteResults()" onfocus="showAutoCompleteDiv()" onblur="hideAutoCompleteDiv()" />
+            <div id="results-weather" style="display:none;">
             </div>
           </div>
         </div>

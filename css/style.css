@@ -11,8 +11,8 @@
 }
 @media (min-width: 768px) {
     .jumbotron {
-        padding-top: calc(var(--jumbotron-padding-y) * 1);
-        padding-bottom: calc(var(--jumbotron-padding-y) * 1);
+        padding-top: calc(var(--jumbotron-padding-y) * 0.5);
+        padding-bottom: calc(var(--jumbotron-padding-y) * 0.5);
     }
 }
 
@@ -40,8 +40,8 @@ header {
 }
 
 footer {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 footer p {
@@ -62,4 +62,15 @@ footer p {
 
 .btn-group {
     margin-bottom: 30px;
+}
+
+#searchtext {
+    width: 40%;
+}
+#results-weather {
+    width: 40%;
+    border: 1px solid black;
+    position: fixed;
+    z-index: 20;
+    background: #fff;
 }

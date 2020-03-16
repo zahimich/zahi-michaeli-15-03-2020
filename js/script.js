@@ -130,6 +130,14 @@ function showAutoCompleteResults(data) {
     });
     document.getElementsByClassName("resultItem")[0].click();
 }
+function showAutoCompleteDiv() {
+    document.getElementById("results-weather").setAttribute("style", "display: block;");
+}
+function hideAutoCompleteDiv() {
+    setTimeout(function() {
+        document.getElementById("results-weather").setAttribute("style", "display: none;");
+    }, 200);
+}
 function setResultItemHtml(container, city) {
     container.innerHTML += getResultItemHtml(city);
 }
@@ -151,10 +159,7 @@ function addToFavorites() {
     }
     favorites.push(favorite);
     saveToLS("favorites", favorites);
-
     loadFavorites();
-
-    //loadAutoCompleteResults();
     loadCityWeather();
 }
 function buildCityItem(sender) {
@@ -178,8 +183,6 @@ function removeFromFavorites() {
     }
     saveToLS("favorites", favorites);
     loadFavorites();
-
-    //loadAutoCompleteResults();
     loadCityWeather();
 }
 function existInFavorites(key) {
@@ -211,12 +214,10 @@ function setFavoritesItemHtml(container, city) {
     container.innerHTML += getFavoritesItemHtml(city);
 }
 function getFavoritesItemHtml(city) {
-    var str = '<div class="resultItem col" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="loadCityWeather()">';
-    str += '<div class="col">';
-    str += '<div class="card box-shadow">';
+    var str = '<div class="resultItem col-md-3" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="loadCityWeather()">';
+    str += '<div class="card mb-3 box-shadow">';
     str += '<div class="card-body text-center">';
-    str += '<p class="card-text">' + city.LocalizedName + ', ' + city.Country.LocalizedName + '</p>';
-    str += '</div>';
+    str += '<p class="card-text"><h4>' + city.LocalizedName + '</h4>' + city.Country.LocalizedName + '</p>';
     str += '</div>';
     str += '</div>';
     str += '</div>';
@@ -231,6 +232,7 @@ function loadCityWeather() {
     document.getElementById("results-city").innerHTML = getCityWeatherHtml(city);
     getCurrentWeatherForItem(city);
     getForecastForItem(city);
+    hideAutoCompleteDiv();
 }
 function getCityWeatherHtml(city) {
     var str = '<div class="col-md-12">';
@@ -269,7 +271,7 @@ function showCurrentWeatherForItem(data, city) {
 
         str += '<div class="btn-group">';
         if (existInFavs)
-            str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" onclick="removeFromFavorites()">Remove From Favorites</button>';
+            str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="removeFromFavorites()">Remove From Favorites</button>';
         else
             str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="addToFavorites()">Add To Favorites</button>';
         str += '</div>';
