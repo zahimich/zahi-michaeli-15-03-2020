@@ -105,17 +105,20 @@ function getGeoLocation() {
     }
 }
 function getCityByLocation(position) {
-    var savedCity = readFromLS("savedCity");
-    if (savedCity != null) {
-        loadResultsByCity(savedCity.EnglishName);
+    if (apiLimitReached) {
+        document.getElementById("err").innerHTML = "API Limit Reached!";
+        return;
     }
-    else {
-        var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey="+APIKEY+"&q=" + position.latitude + "," + position.longitude;
-        useXHR(url, function(data) {
-            saveToLS("savedCity", data);
-            loadResultsByCity(data.EnglishName);
-        });
-    }
+
+    var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey="+APIKEY+"&q=" + position.latitude + "," + position.longitude;
+    useXHR(url, function(data) {
+        if (data == undefined) {
+            apiLimitReached = true;
+            document.getElementById("err").innerHTML = "API Limit Reached!";
+            return;
+        }
+        loadResultsByCity(data.EnglishName);
+    });
 }
 function loadResultsByCity(city) {
     document.getElementById("searchtext").value = city;
