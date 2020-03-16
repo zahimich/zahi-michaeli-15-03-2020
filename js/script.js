@@ -323,7 +323,9 @@ function showForecastForItem(data, city) {
     var units = getCurrentUnits();
 
     var str = '<div class="row">';
+    str += '<div class="col">';
     str += '5 Day Forcast:';
+    str += '</div>';
     str += '</div>';
     str += '<div class="row">';
     data.DailyForecasts.forEach(function (item, i) {
