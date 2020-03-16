@@ -49,6 +49,7 @@ function getDayOfWeek(date) {
 
 //#region onload
 document.addEventListener("DOMContentLoaded", function() {
+    localStorage.clear();
     loadResultsByCity("Tel Aviv");
     loadFavorites();
 });
@@ -186,13 +187,6 @@ function addToFavorites() {
     loadFavorites();
     loadCityWeather();
 }
-function buildCityItem(sender) {
-    var favorite = {};
-    favorite.Key = sender.attributes["data-key"].value;
-    favorite.LocalizedName = sender.attributes["data-name"].value;
-    favorite.Country = { LocalizedName : sender.attributes["data-country"].value };
-    return favorite;
-}
 function removeFromFavorites() {
     var keyToRemove = event.currentTarget.attributes["data-key"].value;
     var favorites = readFromLS("favorites");
@@ -257,6 +251,13 @@ function loadCityWeather() {
     getCurrentWeatherForItem(city);
     hideAutoCompleteDiv();
 }
+function buildCityItem(sender) {
+    var favorite = {};
+    favorite.Key = sender.attributes["data-key"].value;
+    favorite.LocalizedName = sender.attributes["data-name"].value;
+    favorite.Country = { LocalizedName : sender.attributes["data-country"].value };
+    return favorite;
+}
 function getCityWeatherHtml(city) {
     var str = '<div class="col-md-12">';
     str += '<div class="card mb-12 box-shadow">';
@@ -288,7 +289,7 @@ function showCurrentWeatherForItem(data, city) {
     var existInFavs = existInFavorites(city.Key);
     var units = getCurrentUnits();
     data.forEach(function (item, i) {
-        var str = "<h3>" + (units == "C" ? item.Temperature.Metric.Value : item.Temperature.Imperial.Value) + " " + units + " " + item.WeatherText + "</h3><br />";
+        var str = "Current Weather Conditions:<h4>" + (units == "C" ? item.Temperature.Metric.Value : item.Temperature.Imperial.Value) + " " + units + " " + item.WeatherText + "</h4><br />";
 
         str += '<div class="btn-group">';
         if (existInFavs)
