@@ -268,7 +268,7 @@ function getCityWeatherHtml(city) {
     str += '<div class="card mb-12 box-shadow">';
     str += '<div class="card-body text-center">';
     str += '<p class="card-text"><h2>' + city.LocalizedName + '</h2>' + city.Country.LocalizedName + '</p>';
-    str += '<p class="card-text ' + city.Key + '"></p>';
+    str += '<div class="card-text ' + city.Key + '"><div class="spinner-border"></div></div>';
     str += '</div>';
     str += '</div>';
     str += '</div>';
@@ -301,7 +301,8 @@ function showCurrentWeatherForItem(data, city) {
             str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="addToFavorites()">Add To Favorites</button>';
         str += '</div>';
 
-        document.getElementsByClassName(city.Key)[0].innerHTML += str;
+        debugger;
+        document.getElementsByClassName(city.Key)[0].innerHTML = str;
     });
 
     getForecastForItem(city);
