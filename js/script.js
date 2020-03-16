@@ -106,11 +106,9 @@ function loadResultsByCity(city) {
 
 //#region autocomplete
 function loadAutoCompleteResults(loadFirstResult) {
-    if (loadFirstResult == undefined)
-        loadFirstResult = false;
-
     var val = document.getElementById("searchtext").value;
-    if (val.length < 3) return false;
+    if (val.length < 3)
+        return;
 
     if (apiLimitReached) {
         document.getElementById("err").innerHTML = "API Limit Reached!";
@@ -121,7 +119,7 @@ function loadAutoCompleteResults(loadFirstResult) {
     useXHR(url, function(data) {
         checkApi(data);
         if (data != undefined) {
-            showAutoCompleteResults(data, loadFirstResult);
+            showAutoCompleteResults(data, loadFirstResult == undefined ? false : loadFirstResult);
         }
     });
 }
