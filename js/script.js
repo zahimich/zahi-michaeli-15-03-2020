@@ -255,11 +255,11 @@ function loadCityWeather() {
     hideAutoCompleteDiv();
 }
 function buildCityItem(sender) {
-    var favorite = {};
-    favorite.Key = sender.attributes["data-key"].value;
-    favorite.LocalizedName = sender.attributes["data-name"].value;
-    favorite.Country = { LocalizedName : sender.attributes["data-country"].value };
-    return favorite;
+    var city = {};
+    city.Key = sender.attributes["data-key"].value;
+    city.LocalizedName = sender.attributes["data-name"].value;
+    city.Country = { LocalizedName : sender.attributes["data-country"].value };
+    return city;
 }
 function getCityWeatherHtml(city) {
     var str = '<div class="col-md-12">';
