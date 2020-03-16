@@ -19,6 +19,32 @@ function useXHR(url, callback) {
     xhr.open('GET', url);
     xhr.send();
 }
+function getDayOfWeek(date) {
+    switch (date.getDay())
+    {
+        case 0:
+            return "Sun";
+            break;
+        case 1:
+            return "Mon";
+            break;
+        case 2:
+            return "Tue";
+            break;
+        case 3:
+            return "Wed";
+            break;
+        case 4:
+            return "Thu";
+            break;
+        case 5:
+            return "Fri";
+            break;
+        case 6:
+            return "Sat";
+            break;
+    }
+}
 //#endregion infrastructure
 
 //#region onload
@@ -299,12 +325,12 @@ function showForecastForItem(data, city) {
     var str = '<div class="row">';
     data.DailyForecasts.forEach(function (item, i) {
         var dateObj = new Date(item.Date);
-        var dateStr = dateObj.getDate() + "." + (dateObj.getMonth() == 12 ? 1 : dateObj.getMonth() + 1);
-
+        var dateStr = getDayOfWeek(dateObj) + " " + dateObj.getDate() + "." + (dateObj.getMonth() == 12 ? 1 : dateObj.getMonth() + 1);
+        
         str += '<div class="col">';
         str += '<div class="card box-shadow">';
         str += '<div class="card-body text-center">';
-        str += '<p class="card-text"><h3>' + dateStr + "</h3>" + item.Temperature.Minimum.Value + "-" + item.Temperature.Maximum.Value + " " + units + '</p>';
+        str += '<p class="card-text"><h5>' + dateStr + "</h5>" + item.Temperature.Minimum.Value + "-" + item.Temperature.Maximum.Value + " " + units + '</p>';
         str += '</div>';
         str += '</div>';
         str += '</div>';
