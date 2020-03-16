@@ -49,7 +49,6 @@ function getDayOfWeek(date) {
 
 //#region onload
 document.addEventListener("DOMContentLoaded", function() {
-    localStorage.clear();
     loadResultsByCity("Tel Aviv");
     loadFavorites();
 });
@@ -122,7 +121,7 @@ function loadResultsByCity(city) {
     document.getElementById("searchtext").value = city;
     loadAutoCompleteResults();
     setTimeout(function() {
-        if (document.getElementsByClassName("resultItem") != undefined)
+        if (document.getElementsByClassName("resultItem")[0] != undefined)
             document.getElementsByClassName("resultItem")[0].click();
     }, 500);
 }
@@ -360,7 +359,7 @@ function toggleUnits() {
     saveToLS("units", units);
     loadAutoCompleteResults();
     setTimeout(function() {
-        if (document.getElementsByClassName("resultItem") != undefined)
+        if (document.getElementsByClassName("resultItem")[0] != undefined)
             document.getElementsByClassName("resultItem")[0].click();
     }, 500);
 }
