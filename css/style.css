@@ -83,3 +83,7 @@ footer p {
 .col {
     margin-bottom: 20px;
 }
+
+.spinner-border {
+    margin: auto;
+}
