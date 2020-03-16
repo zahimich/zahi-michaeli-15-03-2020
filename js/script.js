@@ -229,6 +229,9 @@ function loadFavorites() {
         saveToLS("favorites", favorites);
     }
 
+    if (favorites.length == 0)
+        results.innerHTML = "No favorites saved yet.";
+
     favorites.forEach(function (item, i) {
         setFavoritesItemHtml(results, item);
     });
@@ -301,7 +304,6 @@ function showCurrentWeatherForItem(data, city) {
             str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="addToFavorites()">Add To Favorites</button>';
         str += '</div>';
 
-        debugger;
         document.getElementsByClassName(city.Key)[0].innerHTML = str;
     });
 
