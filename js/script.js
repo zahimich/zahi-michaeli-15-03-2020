@@ -323,6 +323,9 @@ function showForecastForItem(data, city) {
     var units = getCurrentUnits();
 
     var str = '<div class="row">';
+    str += '5 Day Forcast:';
+    str += '</div>';
+    str += '<div class="row">';
     data.DailyForecasts.forEach(function (item, i) {
         var dateObj = new Date(item.Date);
         var dateStr = getDayOfWeek(dateObj) + " " + dateObj.getDate() + "." + (dateObj.getMonth() == 12 ? 1 : dateObj.getMonth() + 1);
