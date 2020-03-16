@@ -33,6 +33,7 @@
               <li><a href="#" onclick="showPage('results')" class="text-white">Search</a></li>
               <li><a href="#" onclick="showPage('favorites')" class="text-white">Favorites</a></li>
               <li><a href="#" onclick="getGeoLocation()" class="text-white">Search By Current Location</a></li>
+              <li><a href="#" onclick="toggleUnits()" class="text-white">Toggle Units (C/F)</a></li>
             </ul>
           </div>
         </div>
@@ -44,11 +45,17 @@
 
     <div class="results py-5 bg-light">
       <div class="jumbotron text-center">
-        <h1 class="jumbotron-heading">Search City:</h1>
-        <input id="searchtext" type="text" onkeyup="loadAutoCompleteResults()" />
+        <div>
+          <div class="container">
+            <span class="jumbotron-heading">Search City:</span>
+            <input id="searchtext" type="text" onkeyup="loadAutoCompleteResults()" />
+            <div id="results-weather">
+            </div>
+          </div>
+        </div>
       </div>
       <div class="container">
-        <div class="row" id="results-weather">
+        <div class="row" id="results-city">
         </div>
       </div>
     </div>

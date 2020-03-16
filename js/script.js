@@ -108,7 +108,7 @@ function loadAutoCompleteResults() {
 
     var savedResults = readFromLS("searchResData");
     if (savedResults != null) {
-        showAutoCompleteValues(savedResults);
+        showAutoCompleteResults(savedResults);
     }
     else {
         var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey="+APIKEY+"&q=" + val;
@@ -118,22 +118,32 @@ function loadAutoCompleteResults() {
                 return;
             }
             saveToLS("searchResData", data);
-            showAutoCompleteValues(data);
+            showAutoCompleteResults(data);
         });
     }
 }
-function showAutoCompleteValues(data) {
+function showAutoCompleteResults(data) {
     var results = document.getElementById("results-weather");
     results.innerHTML = "";
     data.forEach(function (item, i) {
-        setItemHtml(results, item, false);
+        setResultItemHtml(results, item);
     });
+    document.getElementsByClassName("resultItem")[0].click();
+}
+function setResultItemHtml(container, city) {
+    container.innerHTML += getResultItemHtml(city);
+}
+function getResultItemHtml(city) {
+    var str = '<div class="resultItem col" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="loadCityWeather()">';
+    str += '<p class="card-text">' + city.LocalizedName + ', ' + city.Country.LocalizedName + '</p>';
+    str += '</div>';
+    return str;
 }
 //#endregion autocomplete
 
 //#region favorites
 function addToFavorites() {
-    var favorite = buildFavoritesItem(event.target);
+    var favorite = buildCityItem(event.currentTarget);
 
     var favorites = readFromLS("favorites");
     if (favorites == null) {
@@ -143,9 +153,11 @@ function addToFavorites() {
     saveToLS("favorites", favorites);
 
     loadFavorites();
-    loadAutoCompleteResults();
+
+    //loadAutoCompleteResults();
+    loadCityWeather();
 }
-function buildFavoritesItem(sender) {
+function buildCityItem(sender) {
     var favorite = {};
     favorite.Key = sender.attributes["data-key"].value;
     favorite.LocalizedName = sender.attributes["data-name"].value;
@@ -153,7 +165,7 @@ function buildFavoritesItem(sender) {
     return favorite;
 }
 function removeFromFavorites() {
-    var keyToRemove = event.target.attributes["data-key"].value;
+    var keyToRemove = event.currentTarget.attributes["data-key"].value;
     var favorites = readFromLS("favorites");
     if (favorites == null) {
         favorites = [];
@@ -166,21 +178,9 @@ function removeFromFavorites() {
     }
     saveToLS("favorites", favorites);
     loadFavorites();
-    loadAutoCompleteResults();
-}
-function loadFavorites() {
-    var results = document.getElementById("results-favorites");
-    results.innerHTML = "";
-    
-    var favorites = readFromLS("favorites");
-    if (favorites == null) {
-        favorites = [];
-        saveToLS("favorites", favorites);
-    }
 
-    favorites.forEach(function (item, i) {
-        setItemHtml(results, item, true);
-    });
+    //loadAutoCompleteResults();
+    loadCityWeather();
 }
 function existInFavorites(key) {
     var exist = false;
@@ -193,88 +193,147 @@ function existInFavorites(key) {
     }
     return exist;
 }
-//#endregion favorites
+function loadFavorites() {
+    var results = document.getElementById("results-favorites");
+    results.innerHTML = "";
+    
+    var favorites = readFromLS("favorites");
+    if (favorites == null) {
+        favorites = [];
+        saveToLS("favorites", favorites);
+    }
 
-//#region item
-function setItemHtml(container, item, isFavorites) {
-    var className = isFavorites ? "fav" + item.Key : item.Key;
-    container.innerHTML += getItemHtml(item.LocalizedName, item.Country.LocalizedName, item.Key, isFavorites);
-    getCurrentWeatherForItem(item.LocalizedName, item.Key, className);
-    getForecastForItem(item.Key, className);
+    favorites.forEach(function (item, i) {
+        setFavoritesItemHtml(results, item);
+    });
 }
-function getItemHtml(cityName, countryName, key, isFavorites) {
-    var existInFavs = existInFavorites(key);
-
-    var str = '<div class="col-md-4">';
-    str += '<div class="card mb-4 box-shadow">';
-    str += '<div class="card-body">';
-    str += '<p class="card-text">' + cityName + ', ' + countryName + '</p>';
-    str += '<p class="card-text ' + (isFavorites ? "fav" + key : key) + '"></p>';
-    str += '<div class="d-flex justify-content-between align-items-center">';
-    str += '<div class="btn-group">';
-    if (!isFavorites && !existInFavs)
-        str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + key + '" data-name="' + cityName + '" data-country="' + countryName + '" onclick="addToFavorites()">Add To Favorites</button>';
-    if (isFavorites || existInFavs)
-        str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + key + '" onclick="removeFromFavorites()">Remove From Favorites</button>';
-    str += '</div>';
+function setFavoritesItemHtml(container, city) {
+    container.innerHTML += getFavoritesItemHtml(city);
+}
+function getFavoritesItemHtml(city) {
+    var str = '<div class="resultItem col" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="loadCityWeather()">';
+    str += '<div class="col">';
+    str += '<div class="card box-shadow">';
+    str += '<div class="card-body text-center">';
+    str += '<p class="card-text">' + city.LocalizedName + ', ' + city.Country.LocalizedName + '</p>';
     str += '</div>';
     str += '</div>';
     str += '</div>';
     str += '</div>';
     return str;
 }
+//#endregion favorites
 
-function getCurrentWeatherForItem(cityName, cityKey, className) {
-    var savedResult = readFromLS("locationData" + cityKey);
-    document.getElementsByClassName(className)[0].innerHTML += "<h3>" + cityName + "</h3>";
+//#region weather
+function loadCityWeather() {
+    showPage('results');
+    var city = buildCityItem(event.currentTarget);
+    document.getElementById("results-city").innerHTML = getCityWeatherHtml(city);
+    getCurrentWeatherForItem(city);
+    getForecastForItem(city);
+}
+function getCityWeatherHtml(city) {
+    var str = '<div class="col-md-12">';
+    str += '<div class="card mb-12 box-shadow">';
+    str += '<div class="card-body text-center">';
+    str += '<p class="card-text"><h2>' + city.LocalizedName + '</h2>' + city.Country.LocalizedName + '</p>';
+    str += '<p class="card-text ' + city.Key + '"></p>';
+    str += '</div>';
+    str += '</div>';
+    str += '</div>';
+    return str;
+}
+
+function getCurrentWeatherForItem(city) {
+    var savedResult = readFromLS("locationData" + city.Key);
     if (savedResult != null) {
-        showCurrentWeatherForItem(savedResult, className);
+        showCurrentWeatherForItem(savedResult, city);
     }
     else {
-        var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/currentconditions/v1/"+cityKey+"?apikey="+APIKEY+"&details=true";
+        var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/currentconditions/v1/"+city.Key+"?apikey="+APIKEY+"&details=true";
         useXHR(url, function(data) {
             if (data == undefined) {
                 //alert("api limit reached");
                 return;
             }
-            saveToLS("locationData" + cityKey, data);
-            showCurrentWeatherForItem(data, className);
+            saveToLS("locationData" + city.Key, data);
+            showCurrentWeatherForItem(data, city);
         });
     }
 }
-function showCurrentWeatherForItem(data, className) {
+function showCurrentWeatherForItem(data, city) {
+    var existInFavs = existInFavorites(city.Key);
+    var units = getCurrentUnits();
     data.forEach(function (item, i) {
-        var str = "Weather: " + item.WeatherText + "<br />";
-        str +=  "Temperature: " + item.Temperature.Metric.Value + " C<br />";
+        var str = "<h3>" + (units == "C" ? item.Temperature.Metric.Value : item.Temperature.Imperial.Value) + " " + units + " " + item.WeatherText + "</h3><br />";
 
-        document.getElementsByClassName(className)[0].innerHTML += str;
+        str += '<div class="btn-group">';
+        if (existInFavs)
+            str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" onclick="removeFromFavorites()">Remove From Favorites</button>';
+        else
+            str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="addToFavorites()">Add To Favorites</button>';
+        str += '</div>';
+
+        document.getElementsByClassName(city.Key)[0].innerHTML += str;
     });
 }
 
-function getForecastForItem(cityKey, className) {
-    var savedForecast = readFromLS("forecastData" + cityKey);
+function getForecastForItem(city) {
+    var units = getCurrentUnits();
+    var savedForecast = readFromLS("forecastData" + city.Key);
     if (savedForecast != null) {
-        showForecastForItem(savedForecast, className);
+        showForecastForItem(savedForecast, city);
     }
     else {
-        var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/forecasts/v1/daily/5day/"+cityKey+"?apikey="+APIKEY+"&details=true&metric=true";
+        var url = "https://cors-anywhere.herokuapp.com/https://dataservice.accuweather.com/forecasts/v1/daily/5day/"+city.Key+"?apikey="+APIKEY+"&details=true&metric=" + (units == "C");
         useXHR(url, function(data) {
             if (data == undefined) {
                 //alert("api limit reached");
                 return;
             }
-            saveToLS("forecastData" + cityKey, data);
-            showForecastForItem(data, className);
+            saveToLS("forecastData" + city.Key, data);
+            showForecastForItem(data, city);
         });
     }
 }
-function showForecastForItem(data, className) {
+function showForecastForItem(data, city) {
+    var units = getCurrentUnits();
+
+    var str = '<div class="row">';
     data.DailyForecasts.forEach(function (item, i) {
         var dateObj = new Date(item.Date);
         var dateStr = dateObj.getDate() + "." + (dateObj.getMonth() == 12 ? 1 : dateObj.getMonth() + 1);
-        var str = dateStr + ": " + item.Temperature.Minimum.Value + "-" + item.Temperature.Maximum.Value + " C<br />";
-        
-        document.getElementsByClassName(className)[0].innerHTML += str;
+
+        str += '<div class="col">';
+        str += '<div class="card box-shadow">';
+        str += '<div class="card-body text-center">';
+        str += '<p class="card-text"><h3>' + dateStr + "</h3>" + item.Temperature.Minimum.Value + "-" + item.Temperature.Maximum.Value + " " + units + '</p>';
+        str += '</div>';
+        str += '</div>';
+        str += '</div>';
     });
+    str += '</div>';
+
+    document.getElementsByClassName(city.Key)[0].innerHTML += str;
 }
-//#endregion item
+//#endregion weather
+
+//#region units
+function getCurrentUnits() {
+    var savedUnits = readFromLS("units");
+    if (savedUnits == null) {
+        savedUnits = "C";
+        saveToLS("units", savedUnits);
+    }
+    return savedUnits;
+}
+function toggleUnits() {
+    var units = getCurrentUnits();
+    if (units == "C")
+        units = "F";
+    else
+        units = "C";
+    saveToLS("units", units);
+    loadAutoCompleteResults();
+}
+//#endregion units
