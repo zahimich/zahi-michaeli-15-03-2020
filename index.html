@@ -13,7 +13,7 @@
   <header>
     <div class="navbar navbar-dark bg-dark box-shadow">
       <div class="container d-flex justify-content-between">
-        <a href="#" class="navbar-brand d-flex align-items-center" onclick="showPage('results', false)">
+        <a href="#" class="navbar-brand d-flex align-items-center" onclick="showPage('results')">
           <img src="https://www.accuweather.com/images/logos/accuweather.svg" />
         </a>
         <button class="navbar-toggler" type="button" onclick="toggleMenu()" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,7 +21,7 @@
         </button>
       </div>
     </div>
-    <div class="collapse bg-dark animated" id="navbarHeader" hidden>
+    <div class="collapse bg-dark animated" hidden>
       <div class="container">
         <div class="row">
           <div class="col-sm-8 col-md-7 py-4">
@@ -30,8 +30,9 @@
           <div class="col-sm-4 offset-md-1 py-4">
             <h4 class="text-white">Menu</h4>
             <ul class="list-unstyled">
-              <li><a href="#" onclick="showPage('results', true)" class="text-white">Show Results</a></li>
-              <li><a href="#" onclick="showPage('favorites', true)" class="text-white">Show Favorites</a></li>
+              <li><a href="#" onclick="showPage('results')" class="text-white">Search</a></li>
+              <li><a href="#" onclick="showPage('favorites')" class="text-white">Favorites</a></li>
+              <li><a href="#" onclick="getGeoLocation()" class="text-white">Search By Current Location</a></li>
             </ul>
           </div>
         </div>

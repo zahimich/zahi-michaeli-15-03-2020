@@ -25,58 +25,61 @@ document.addEventListener("DOMContentLoaded", function() {
     //localStorage.clear();
     //localStorage.removeItem("searchResData");
     //localStorage.removeItem("favorites");
-
-    getGeoLocation();
+    
+    loadResultsByCity("Tel Aviv");
     loadFavorites();
 });
 //#endregion onload
 
 //#region pagenavigation
 function toggleMenu() {
-    var elem = document.getElementById("navbarHeader");
-	if (elem.classList.contains('show')) {
-        elem.classList.add('fadeOutUp');
-        setTimeout(function() {
-            elem.setAttribute('hidden', 'true');
-            elem.classList.remove('show');
-            elem.classList.remove('fadeOutUp');
-        }, 1000);
-		return;
-	}
+	if (document.getElementsByClassName("animated")[0].classList.contains('show'))
+        hideMenu();
+    else
+        showMenu();
+}
+function showMenu() {
+    var elem = document.getElementsByClassName("animated")[0];
     elem.removeAttribute('hidden');
-	elem.classList.add('show');
+    elem.classList.add('show');
     elem.classList.add('fadeInDown');
     setTimeout(function() {
         elem.classList.remove('fadeInDown');
-    }, 1000);
+    }, 500);
 }
-function showPage(name, closeMenu) {
-    document.getElementsByClassName("favorites")[0].setAttribute('style', 'display:none;');
-    document.getElementsByClassName("results")[0].setAttribute('style', 'display:none;');
+function hideMenu() {
+    var elem = document.getElementsByClassName("animated")[0];
+    elem.classList.add('fadeOutUp');
+    setTimeout(function() {
+        elem.setAttribute('hidden', 'true');
+        elem.classList.remove('show');
+        elem.classList.remove('fadeOutUp');
+    }, 500);
+}
+function showPage(name) {
+    hideAllPages();
+    if (document.getElementsByClassName("animated")[0].classList.contains('show'))
+        hideMenu();
 
     document.getElementsByClassName(name)[0].setAttribute('style', 'display:block;');
-
-    if (closeMenu)
-        toggleMenu();
+}
+function hideAllPages() {
+    document.getElementsByClassName("favorites")[0].setAttribute('style', 'display:none;');
+    document.getElementsByClassName("results")[0].setAttribute('style', 'display:none;');
 }
 //#endregion pagenavigation
 
 //#region geolocation
 function getGeoLocation() {
+    showPage('results');
+
     if (navigator.geolocation) {
-        var savedPosition = readFromLS("geolocation");
-        if (savedPosition != null) {
-            getCityByLocation(savedPosition);
-        }
-        else {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var position = {};
-                position.longitude = position.coords.longitude;
-                position.latitude = position.coords.latitude;
-                saveToLS("geolocation", position);
-                getCityByLocation(position);
-            });
-        }
+        navigator.geolocation.getCurrentPosition(function(returnedPosition) {
+            var position = {};
+            position.longitude = returnedPosition.coords.longitude;
+            position.latitude = returnedPosition.coords.latitude;
+            getCityByLocation(position);
+        });
     }
 }
 function getCityByLocation(position) {
