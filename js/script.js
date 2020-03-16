@@ -230,7 +230,7 @@ function loadFavorites() {
     }
 
     if (favorites.length == 0)
-        results.innerHTML = "No favorites saved yet.";
+        results.innerHTML = "<p style='margin: auto;'>No favorites saved yet.</p>";
 
     favorites.forEach(function (item, i) {
         setFavoritesItemHtml(results, item);
@@ -267,10 +267,22 @@ function buildCityItem(sender) {
     return city;
 }
 function getCityWeatherHtml(city) {
+    var existInFavs = existInFavorites(city.Key);
+
     var str = '<div class="col-md-12">';
     str += '<div class="card mb-12 box-shadow">';
     str += '<div class="card-body text-center">';
     str += '<p class="card-text"><h2>' + city.LocalizedName + '</h2>' + city.Country.LocalizedName + '</p>';
+    str += '<p class="card-text">';
+    
+    str += '<div class="btn-group">';
+    if (existInFavs)
+        str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="removeFromFavorites()">Remove From Favorites</button>';
+    else
+        str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="addToFavorites()">Add To Favorites</button>';
+    str += '</div>';
+
+    str += '</p>';
     str += '<div class="card-text ' + city.Key + '"><div class="spinner-border"></div></div>';
     str += '</div>';
     str += '</div>';
@@ -292,21 +304,12 @@ function getCurrentWeatherForItem(city) {
         });
 }
 function showCurrentWeatherForItem(data, city) {
-    var existInFavs = existInFavorites(city.Key);
     var units = getCurrentUnits();
+    debugger;
     data.forEach(function (item, i) {
         var str = "Current Weather Conditions:<h4>" + (units == "C" ? item.Temperature.Metric.Value : item.Temperature.Imperial.Value) + " " + units + " " + item.WeatherText + "</h4><br />";
-
-        str += '<div class="btn-group">';
-        if (existInFavs)
-            str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="removeFromFavorites()">Remove From Favorites</button>';
-        else
-            str += '<button type="button" class="btn btn-sm btn-outline-secondary" data-key="' + city.Key + '" data-name="' + city.LocalizedName + '" data-country="' + city.Country.LocalizedName + '" onclick="addToFavorites()">Add To Favorites</button>';
-        str += '</div>';
-
         document.getElementsByClassName(city.Key)[0].innerHTML = str;
     });
-
     getForecastForItem(city);
 }
 
