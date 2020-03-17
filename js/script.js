@@ -244,6 +244,7 @@ function getCityWeatherHtml(city) {
 
     str += '</p>';
     str += '<div class="card-text ' + city.Key + '"><div class="spinner-border"></div></div>';
+    str += '<div class="card-text fc' + city.Key + '"><div class="spinner-border"></div></div>';
     str += '</div>';
     str += '</div>';
     str += '</div>';
@@ -304,7 +305,7 @@ function showForecastForItem(data, city) {
     });
     str += '</div>';
 
-    document.getElementsByClassName(city.Key)[0].innerHTML += str;
+    document.getElementsByClassName("fc" + city.Key)[0].innerHTML = str;
 }
 //#endregion weather
 
