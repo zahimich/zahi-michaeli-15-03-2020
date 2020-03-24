@@ -172,7 +172,7 @@ function existInFavorites(key) {
     let foundItem = null;
     let favorites = readFromLS("favorites");
     if (favorites != null) {
-        foundItem = favorites.find(function checkAdult(item) {
+        foundItem = favorites.find(function(item) {
             return item.Key == key;
           });
     }
