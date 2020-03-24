@@ -172,16 +172,11 @@ function existInFavorites(key) {
     let foundItem = null;
     let favorites = readFromLS("favorites");
     if (favorites != null) {
-        debugger;
         foundItem = favorites.find(function checkAdult(item) {
             return item.Key == key;
           });
-        /*favorites.forEach(function (item, i) {
-            if (key == item.Key)
-                exist = true;
-        });*/
     }
-    return foundItem;
+    return foundItem != null;
 }
 function loadFavorites() {
     let results = document.getElementById("results-favorites");
