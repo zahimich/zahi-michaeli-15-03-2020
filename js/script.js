@@ -1,5 +1,5 @@
 //#region infrastructure
-let APIKEY = "J5zdAxwbIEccf5BOhHRo8MJngz8jMLwH";
+const APIKEY = "J5zdAxwbIEccf5BOhHRo8MJngz8jMLwH";
 
 function saveToLS(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
