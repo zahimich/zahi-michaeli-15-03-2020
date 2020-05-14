@@ -1,6 +1,6 @@
 ## ReadMe
 
-This is a Weather app for Herolo made by me, Zahi Michaeli.
+This is an AccuWeather web app with vanilla js. 
 
 Live Demo:
 
